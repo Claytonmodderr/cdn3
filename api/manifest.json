@@ -1,0 +1,21 @@
+{
+  "name": "VideoPlay",
+  "short_name": "VideoPlay",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1f1e1e",
+  "theme_color": "#375666",
+  "description": "Video Playlist App",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
