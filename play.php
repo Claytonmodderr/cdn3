@@ -1,11 +1,9 @@
-
 <?php
-
-$domain = "https://cdnapimega.lat/record/";
+$domain = "https://cdn3-two.vercel.app/api/";
 $url = file_get_contents($domain."canais.php?list");
 $json = json_decode($url, true);
-?>
 
+?>
 <!--PLAYER-->
 <!doctype html>
 <html lang="pt_BR">
