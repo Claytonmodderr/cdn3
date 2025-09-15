@@ -1,6 +1,6 @@
 <?php
 if(isset($_GET['list'])){
-$domain = "https://cdnapimega.lat/record/";
+$domain = "ttps://cdn3-two.vercel.app/api/";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, 'https://service-playplus.ottvs.com.br/v1/android/FindLiveGridByGroup');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
