@@ -1,32 +1,57 @@
 <?php
-// ======================
-// CONFIGURAÇÃO DO PLAYER
-// ======================
-$domain = "https://cdn3-two.vercel.app/api/"; // domínio base
-$apiUrl = $domain . "/canais.php?list"; // endpoint da lista
+// proxy.php?v=ID
+$domain = "https://cdn3-two.vercel.app/api/";
+$apiUrl = $domain . "/canais.php?list";
 
-// tenta carregar o JSON
 $response = @file_get_contents($apiUrl);
-if($response === false){
+if ($response === false) {
+    http_response_code(500);
     die("Erro ao carregar lista de canais.");
 }
 
 $json = json_decode($response, true);
-if(!is_array($json)){
-    die("Erro: resposta inválida da API.");
+if (!is_array($json)) {
+    http_response_code(500);
+    die("Resposta inválida da API.");
 }
 
-// pega o parâmetro 'v'
 $channelId = isset($_GET['v']) ? intval($_GET['v']) : 0;
-if(!isset($json[$channelId])){
+if (!isset($json[$channelId])) {
+    http_response_code(404);
     die("Canal não encontrado.");
 }
 
-// URL do stream (HLS .m3u8)
-$streamUrl = $json[$channelId]["urlHLS"] ?? null;
-if(!$streamUrl){
-    die("Stream indisponível para este canal.");
+$streamUrl = $json[$channelId]["urlHLSChromecast"] ?? null;
+if (!$streamUrl) {
+    http_response_code(404);
+    die("Stream indisponível.");
 }
+
+// cria cabeçalhos para o cliente
+header("Content-Type: application/vnd.apple.mpegurl");
+header("Access-Control-Allow-Origin: *");
+
+// abre o stream remoto e repassa
+$opts = [
+    "http" => [
+        "method" => "GET",
+        "header" => "User-Agent: Mozilla/5.0\r\n"
+    ]
+];
+$context = stream_context_create($opts);
+
+$handle = @fopen($streamUrl, "r", false, $context);
+if (!$handle) {
+    http_response_code(502);
+    die("Falha ao abrir stream.");
+}
+
+while (!feof($handle)) {
+    echo fread($handle, 8192);
+    flush();
+}
+fclose($handle);
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
