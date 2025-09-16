@@ -1,57 +1,35 @@
 <?php
-// proxy.php?v=ID
-$domain = "https://cdn3-two.vercel.app/api/";
+// ======================
+// CONFIGURAÇÃO DO PLAYER
+// ======================
+$domain = "https://cdn3-two.vercel.app/api/"; 
 $apiUrl = $domain . "/canais.php?list";
 
+// tenta carregar o JSON
 $response = @file_get_contents($apiUrl);
-if ($response === false) {
-    http_response_code(500);
+if($response === false){
     die("Erro ao carregar lista de canais.");
 }
 
 $json = json_decode($response, true);
-if (!is_array($json)) {
-    http_response_code(500);
-    die("Resposta inválida da API.");
+if(!is_array($json)){
+    die("Erro: resposta inválida da API.");
 }
 
+// pega o parâmetro 'v'
 $channelId = isset($_GET['v']) ? intval($_GET['v']) : 0;
-if (!isset($json[$channelId])) {
-    http_response_code(404);
+if(!isset($json[$channelId])){
     die("Canal não encontrado.");
 }
 
+// URL do stream
 $streamUrl = $json[$channelId]["urlHLSChromecast"] ?? null;
-if (!$streamUrl) {
-    http_response_code(404);
-    die("Stream indisponível.");
+if(!$streamUrl){
+    die("Stream indisponível para este canal.");
 }
 
-// cria cabeçalhos para o cliente
-header("Content-Type: application/vnd.apple.mpegurl");
-header("Access-Control-Allow-Origin: *");
-
-// abre o stream remoto e repassa
-$opts = [
-    "http" => [
-        "method" => "GET",
-        "header" => "User-Agent: Mozilla/5.0\r\n"
-    ]
-];
-$context = stream_context_create($opts);
-
-$handle = @fopen($streamUrl, "r", false, $context);
-if (!$handle) {
-    http_response_code(502);
-    die("Falha ao abrir stream.");
-}
-
-while (!feof($handle)) {
-    echo fread($handle, 8192);
-    flush();
-}
-fclose($handle);
-
+// URL via proxy
+$proxyUrl = "https://canaisnatv.me/proxy.php?url=" . urlencode($streamUrl);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -75,69 +53,34 @@ fclose($handle);
   .player {
     width:100%;
     max-width:980px;
-    background: #000;
+    background:#000;
     border-radius:12px;
     overflow:hidden;
-    
     position:relative;
   }
   video{ width:100%; height:415px; display:block; background:black; }
 
-  .meta-top {
-    position:absolute; top:10px; left:12px;
-    display:flex; gap:10px; align-items:center; z-index:30;
-  }
-  .live-badge{
-    background:var(--danger); color:white; font-weight:700;
-    padding:6px 8px; border-radius:6px; font-size:13px;
-    display:inline-flex; align-items:center; gap:8px;
-    box-shadow:0 4px 12px rgba(255,82,82,.12);
-  }
-  .latency {
-    background: rgba(255,255,255,0.04);
-    color:var(--muted);
-    padding:6px 8px; border-radius:6px; font-size:13px;
-  }
+  .meta-top { position:absolute; top:10px; left:12px; display:flex; gap:10px; align-items:center; z-index:30; }
+  .live-badge{ background:var(--danger); color:white; font-weight:700; padding:6px 8px; border-radius:6px; font-size:13px; }
+  .latency { background: rgba(255,255,255,0.04); color:var(--muted); padding:6px 8px; border-radius:6px; font-size:13px; }
 
   .center-play{ position:absolute; inset:0; display:grid; place-items:center; z-index:25; pointer-events:none; }
-  .center-play button{
-    pointer-events:auto;
-    border:0; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-    padding:16px; border-radius:50%; font-size:40px; color:#fff; cursor:pointer;
-    display:inline-flex; align-items:center; justify-content:center;
-    box-shadow:0 8px 30px rgba(2,6,23,0.6);
-    transition:transform .16s;
-  }
-  .center-play button:hover{ transform:scale(1.06) }
-
-  .controls{
-    position:absolute; left:0; right:0; bottom:0;
-    padding:12px 12px 18px;
-    background: linear-gradient(0deg, rgba(0,0,0,0.72), transparent 40%);
-    display:flex; flex-direction:column; gap:10px;
-    z-index:30; transform:translateY(0); opacity:1;
-    transition:opacity .28s ease,transform .28s ease;
-  }
-  .controls.hidden { opacity:0; transform:translateY(8px); pointer-events:none; }
+  .center-play button{ pointer-events:auto; border:0; background:rgba(255,255,255,0.08); padding:16px; border-radius:50%; font-size:40px; color:#fff; cursor:pointer; }
+  .controls{ position:absolute; left:0; right:0; bottom:0; padding:12px; background: linear-gradient(0deg, rgba(0,0,0,0.72), transparent 40%); display:flex; flex-direction:column; gap:10px; z-index:30; }
 
   .progress-wrap{display:flex;align-items:center;gap:10px}
   .time { font-size:13px; color:var(--muted); min-width:56px; text-align:center; }
-
-  .progress{ flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:999px; position:relative; cursor:pointer; overflow:hidden; }
-  .progress .buffer{ position:absolute; left:0; top:0; height:100%; background:rgba(255,255,255,0.12); width:0 }
+  .progress{ flex:1; height:8px; background:rgba(255,255,255,0.06); border-radius:999px; position:relative; overflow:hidden; }
   .progress .played{ position:absolute; left:0; top:0; height:100%; background:linear-gradient(90deg,var(--accent),#8b5cf6); width:0 }
 
   .row{ display:flex; align-items:center; gap:10px }
   .btn{ background:none; border:0; color:white; cursor:pointer; padding:8px; border-radius:8px; font-size:20px; display:inline-flex; align-items:center; justify-content:center; }
-  .btn:active{ transform:scale(.98) }
   .group-right{ margin-left:auto; display:flex; gap:6px; align-items:center }
-
   .volume{ display:flex; align-items:center; gap:8px; }
   .vol-slider{ width:120px; height:6px; background:rgba(255,255,255,0.06); border-radius:6px; position:relative; cursor:pointer; }
   .vol-slider .level{ position:absolute; left:0; top:0; bottom:0; width:50%; background:var(--accent); border-radius:6px; }
 
   .message{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.6); padding:10px 14px; border-radius:8px; color:var(--muted); z-index:40; font-size:14px; display:none; }
-  @media (max-width:640px){ .vol-slider{ width:90px } .time{ display:none } }
 </style>
 </head>
 <body>
@@ -146,27 +89,22 @@ fclose($handle);
   <video id="video" playsinline webkit-playsinline muted></video>
 
   <div class="meta-top">
-    <div class="live-badge" id="liveBadge">LIVE</div>
+    <div class="live-badge">LIVE</div>
     <div class="latency" id="latency">-- ms</div>
   </div>
 
-  <div class="center-play" id="centerPlay">
-    <button id="centerPlayBtn"><span class="material-icons" id="centerIcon">play_arrow</span></button>
-  </div>
+  <div class="center-play"><button id="centerPlayBtn"><span class="material-icons" id="centerIcon">play_arrow</span></button></div>
 
-  <div class="controls" id="controls">
+  <div class="controls">
     <div class="progress-wrap">
-      <div class="time" id="leftTime">--:--</div>
-      <div class="progress" id="progress">
-        <div class="buffer" id="buffer"></div>
-        <div class="played" id="played"></div>
-      </div>
-      <div class="time" id="rightTime">LIVE</div>
+      <div class="time">--:--</div>
+      <div class="progress"><div class="played" id="played"></div></div>
+      <div class="time">LIVE</div>
     </div>
     <div class="row">
       <button class="btn" id="playBtn"><span class="material-icons" id="playIcon">play_arrow</span></button>
       <div class="volume">
-        <button class="btn" id="muteBtn"><span class="material-icons" id="volIcon">volume_off</span></button>
+        <button class="btn" id="muteBtn"><span class="material-icons" id="volIcon">volume_up</span></button>
         <div class="vol-slider" id="volSlider"><div class="level" id="volLevel"></div></div>
       </div>
       <div class="group-right">
@@ -181,21 +119,20 @@ fclose($handle);
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.2/dist/hls.min.js"></script>
 <script>
 (function(){
-  const STREAM_URL = "<?php echo $streamUrl; ?>"; // URL vinda do PHP
+  const STREAM_URL = "<?php echo $proxyUrl; ?>";
   const video = document.getElementById('video');
   const playBtn = document.getElementById('playBtn');
   const playIcon = document.getElementById('playIcon');
-  const centerPlay = document.getElementById('centerPlay');
+  const centerPlayBtn = document.getElementById('centerPlayBtn');
   const centerIcon = document.getElementById('centerIcon');
   const muteBtn = document.getElementById('muteBtn');
   const volIcon = document.getElementById('volIcon');
   const volSlider = document.getElementById('volSlider');
   const volLevel = document.getElementById('volLevel');
-  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const fsBtn = document.getElementById('fullscreenBtn');
   const fsIcon = document.getElementById('fsIcon');
   const message = document.getElementById('message');
 
-  // inicializar player
   if(Hls.isSupported()){
     const hls = new Hls();
     hls.loadSource(STREAM_URL);
@@ -208,14 +145,13 @@ fclose($handle);
   }
 
   function togglePlay(){
-    if(video.paused){ video.play(); }
-    else{ video.pause(); }
+    if(video.paused){ video.play(); } else { video.pause(); }
   }
-  video.addEventListener('play', ()=>{ playIcon.textContent="pause"; centerIcon.textContent="pause"; centerPlay.style.display="none"; });
-  video.addEventListener('pause', ()=>{ playIcon.textContent="play_arrow"; centerIcon.textContent="play_arrow"; centerPlay.style.display="grid"; });
+  video.addEventListener('play', ()=>{ playIcon.textContent="pause"; centerIcon.textContent="pause"; });
+  video.addEventListener('pause', ()=>{ playIcon.textContent="play_arrow"; centerIcon.textContent="play_arrow"; });
 
   playBtn.addEventListener('click', togglePlay);
-  centerPlay.addEventListener('click', togglePlay);
+  centerPlayBtn.addEventListener('click', togglePlay);
 
   muteBtn.addEventListener('click', ()=>{
     video.muted = !video.muted;
@@ -232,7 +168,7 @@ fclose($handle);
     volIcon.textContent = video.volume===0 ? "volume_off" : "volume_up";
   });
 
-  fullscreenBtn.addEventListener('click', ()=>{
+  fsBtn.addEventListener('click', ()=>{
     if(!document.fullscreenElement){ video.parentElement.requestFullscreen(); fsIcon.textContent="fullscreen_exit"; }
     else{ document.exitFullscreen(); fsIcon.textContent="fullscreen"; }
   });
