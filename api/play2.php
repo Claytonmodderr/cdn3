@@ -23,7 +23,7 @@ if(!isset($json[$channelId])){
 }
 
 // URL do stream (HLS .m3u8)
-$streamUrl = $json[$channelId]["urlHLSChromecast"] ?? null;
+$streamUrl = $json[$channelId]["urlHLSBackup"] ?? null;
 if(!$streamUrl){
     die("Stream indisponível para este canal.");
 }
