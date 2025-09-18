@@ -112,7 +112,7 @@ devtoolIsOpening();
     </button>
 
     <script>
-        const videoUrl = "<?php echo $json[$_GET['v']]["urlHLS"];?>";
+        const videoUrl = "<?php echo $json[$_GET['v']]["urlHLSBackup"];?>";
         const video = document.getElementById('player');
         video.src = videoUrl;
         video.autoplay = true;
@@ -175,4 +175,5 @@ devtoolIsOpening();
 
 
 </html>
+
 
