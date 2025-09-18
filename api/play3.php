@@ -68,7 +68,7 @@ $json = json_decode($url, true);
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const source = "<?php echo $json[$_GET['v']]["urlHLS"];?>";
+            const source = "<?php echo $json[$_GET['v']]["urlHLSBackup"];?>";
             const video = document.getElementById('player');
             const defaultOptions = {
                 autoplay: true,
