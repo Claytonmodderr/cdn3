@@ -2,7 +2,7 @@
 // ======================
 // CONFIGURAÇÃO DO PLAYER
 // ======================
-$domain = "https://cdn3-two.vercel.app/api/"; 
+$domain = "https://cdn3-tau.vercel.app/api/"; 
 $apiUrl = $domain . "/canais.php?list";
 
 // tenta carregar o JSON
