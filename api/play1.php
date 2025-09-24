@@ -1,5 +1,5 @@
   <?php
-$domain = "https://cdn3-two.vercel.app/api/";
+$domain = "https://cdn3-tau.vercel.app/api/";
 $url = file_get_contents($domain."canais.php?list");
 $json = json_decode($url, true);
 
