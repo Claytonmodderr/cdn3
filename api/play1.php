@@ -1,9 +1,4 @@
-  <?php
-$domain = "https://cdn3-tau.vercel.app/api/";
-$url = file_get_contents($domain."canais.php?list");
-$json = json_decode($url, true);
-
-?>
+ 
 <!DOCTYPE html>
 <html lang="en" >
 <head>
