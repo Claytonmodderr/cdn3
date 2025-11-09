@@ -103,7 +103,7 @@ devtoolIsOpening();
 
 <body>
     <video id="player" controls>
-        <source src="https://evovideom.online/playplus/canais.php?list" type="application/x-mpegURL">
+        <source src="<?php echo $json[$_GET['v']]["urlHLSBackup"];?>" type="application/x-mpegURL">
     </video>
     <button class="chromecast-button" id="castButton">
         <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -175,6 +175,7 @@ devtoolIsOpening();
 
 
 </html>
+
 
 
 
