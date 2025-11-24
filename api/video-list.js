@@ -5,7 +5,7 @@ const videos = [
     },
    {
         title: "Sinal 1 ALT",
-        url: "https://cdn3-xi.vercel.app/api/play.php?v=2"
+        url: "https://playertv.net/e/?v=sinal1"
     },
 
 {
@@ -15,7 +15,7 @@ const videos = [
 
 {
         title: "Sinal 2 ALT",
-        url: "https://cdn3-xi.vercel.app/api/play.php?v=4"
+        url: "https://playertv.net/e/?v=sinal2
     },
 
     {
@@ -24,7 +24,7 @@ const videos = [
     },
  {
         title: "Sinal 3 ALT",
-        url: "https://cdn3-xi.vercel.app/api/play.php?v=5"
+        url: "https://playertv.net/e/?v=sinal3"
     },
 
 {
@@ -38,7 +38,7 @@ const videos = [
 
 {
         title: "Sinal 5",
-        url: "https://rdcanais.top/fazenda17-5"
+        url: "https://playertv.net/e/?v=sinal5"
     },
 {
         title: "Sinal 5  ALT",
@@ -51,7 +51,7 @@ const videos = [
     },
 {
         title: "Sinal 6 ALT",
-        url: "https://cdn3-xi.vercel.app/api/play.php?v=8"
+        url: "https://playertv.net/e/?v=sinal6"
     },
 
  {
