@@ -33,7 +33,7 @@ const videos = [
     },
 {
         title: "Sinal 4 ALT",
-        url: "https://cdn3-xi.vercel.app/api/play.php?v=6"
+        url: "https://playertv.net/e/?v=sinal4"
     },
 
 {
@@ -42,7 +42,7 @@ const videos = [
     },
 {
         title: "Sinal 5  ALT",
-        url: "https://cdn3-xi.vercel.app/api/play.php?v=7"
+        url: "https://playertv.net/e/?v=sinal5"
     },
 
 {
